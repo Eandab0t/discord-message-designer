@@ -4,7 +4,14 @@ const state = {
   content: "",
   embeds: [],
   components: [], /* top-level nodes: container() or actionRow() */
-  files: []       /* { name, file, usage: "thumbnail"|"image", embedIndex } */
+  files: [],      /* { name, file, usage: "thumbnail"|"image", embedIndex } */
+  settings: {     /* message-level settings */
+    name: "New Message",
+    channelId: "",
+    authorId: "",
+    accentColor: "#5865f2",
+    flags: "32768"
+  }
 };
 
 let embedSeq = 1;

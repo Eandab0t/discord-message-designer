@@ -55,6 +55,8 @@ document.addEventListener("keydown", (e) => {
   const mod = e.ctrlKey || e.metaKey;
   if (mod && e.key.toLowerCase() === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
   else if (mod && (e.key.toLowerCase() === "y" || (e.key.toLowerCase() === "z" && e.shiftKey))) { e.preventDefault(); redo(); }
+  else if (mod && e.shiftKey && e.key.toLowerCase() === "e") { e.preventDefault(); exportJson(); }
+  else if (mod && e.shiftKey && e.key.toLowerCase() === "i") { e.preventDefault(); importJson(); }
   else if (mod && e.key.toLowerCase() === "d" && selected && selected.kind === "comp" && selected.id) {
     e.preventDefault();
     beforeEdit();
@@ -101,3 +103,54 @@ if (!state.embeds.length) state.embeds.push(newEmbed());
 pendingEdit = true;
 renderAll();
 updateHistoryButtons();
+
+/* ---- message name sync ---- */
+(function(){
+  const nameInput = $("msgNameInput");
+  if (!nameInput) return;
+  nameInput.value = state.settings.name;
+  nameInput.oninput = () => { state.settings.name = nameInput.value || "New Message"; saveDraft(); };
+})();
+
+/* ---- settings sync ---- */
+(function(){
+  const channelIdEl = $("settingChannelId");
+  const authorIdEl = $("settingAuthorId");
+  const accentPickerEl = $("settingAccentColorPicker");
+  const accentTextEl = $("settingAccentColor");
+  const flagsEl = $("settingFlags");
+  if (channelIdEl) { channelIdEl.value = state.settings.channelId; channelIdEl.oninput = () => { state.settings.channelId = channelIdEl.value; saveDraft(); }; }
+  if (authorIdEl) { authorIdEl.value = state.settings.authorId; authorIdEl.oninput = () => { state.settings.authorId = authorIdEl.value; saveDraft(); }; }
+  if (accentTextEl) {
+    accentTextEl.value = state.settings.accentColor;
+    accentTextEl.oninput = () => {
+      state.settings.accentColor = accentTextEl.value || "#5865f2";
+      if (accentPickerEl) accentPickerEl.value = state.settings.accentColor;
+      saveDraft();
+    };
+  }
+  if (accentPickerEl) {
+    accentPickerEl.value = state.settings.accentColor;
+    accentPickerEl.oninput = () => {
+      state.settings.accentColor = accentPickerEl.value;
+      if (accentTextEl) accentTextEl.value = accentPickerEl.value;
+      saveDraft();
+    };
+  }
+  if (flagsEl) { flagsEl.value = state.settings.flags; flagsEl.oninput = () => { state.settings.flags = flagsEl.value; saveDraft(); }; }
+})();
+
+function syncSettingsUI(){
+  const channelIdEl = $("settingChannelId");
+  const authorIdEl = $("settingAuthorId");
+  const accentPickerEl = $("settingAccentColorPicker");
+  const accentTextEl = $("settingAccentColor");
+  const flagsEl = $("settingFlags");
+  const nameInput = $("msgNameInput");
+  if (channelIdEl) channelIdEl.value = state.settings.channelId || "";
+  if (authorIdEl) authorIdEl.value = state.settings.authorId || "";
+  if (accentTextEl) accentTextEl.value = state.settings.accentColor || "#5865f2";
+  if (accentPickerEl) accentPickerEl.value = state.settings.accentColor || "#5865f2";
+  if (flagsEl) flagsEl.value = state.settings.flags || "32768";
+  if (nameInput) nameInput.value = state.settings.name || "New Message";
+}

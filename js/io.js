@@ -65,6 +65,15 @@ function applyPayload(p){
   }
 
   state.files = [];
+
+  /* import settings metadata if present */
+  if (p.channel_id) state.settings.channelId = p.channel_id;
+  if (p.author_id) state.settings.authorId = p.author_id;
+  if (p.accent_color != null) state.settings.accentColor = intToHex(p.accent_color);
+  if (p.flags != null) state.settings.flags = String(p.flags);
+  if (p.name) state.settings.name = p.name;
+  syncSettingsUI();
+
   $("msgContent").value = state.content;
   selected = null;
   renderAll();

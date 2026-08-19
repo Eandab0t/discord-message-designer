@@ -14,6 +14,8 @@
 <div class="topbar">
   <div class="brand"><span class="logo">&#x25C8;</span> Discord Designer</div>
   <div class="spacer"></div>
+  <input id="msgNameInput" type="text" value="New Message" placeholder="Message name..." style="background:transparent;border:none;color:var(--text);font-size:14px;font-weight:600;padding:4px 0;width:180px;" spellcheck="false" />
+  <div class="spacer"></div>
   <button id="btnUndo" class="btn ghost" title="Undo (Ctrl+Z)">&#x21B6;</button>
   <button id="btnRedo" class="btn ghost" title="Redo (Ctrl+Y)">&#x21B7;</button>
   <button id="btnReset" class="btn danger">New Message</button>
@@ -119,6 +121,33 @@
 
     <div class="section-title">Validation <span class="spacer" style="flex:1"></span><button id="btnAutoFix" class="btn sm" title="Remove empty embeds/components">Auto-fix</button></div>
     <div id="validationPanel" class="validation"></div>
+
+    <div class="section-title">Settings</div>
+    <div class="card" style="font-size:13px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label>Channel ID</label>
+          <input type="text" id="settingChannelId" placeholder="Optional" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:var(--radius-sm);font-size:13px;" />
+        </div>
+        <div>
+          <label>Author ID</label>
+          <input type="text" id="settingAuthorId" placeholder="Optional" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:var(--radius-sm);font-size:13px;" />
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div>
+          <label>Accent Color</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="color" id="settingAccentColorPicker" value="#5865f2" style="width:32px;height:32px;border:1px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;background:var(--bg2);padding:2px;" />
+            <input type="text" id="settingAccentColor" value="#5865f2" placeholder="#5865f2" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:var(--radius-sm);font-size:13px;" />
+          </div>
+        </div>
+        <div>
+          <label>Flags</label>
+          <input type="text" id="settingFlags" value="32768" placeholder="32768" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:var(--radius-sm);font-size:13px;" />
+        </div>
+      </div>
+    </div>
 
     <div style="height:20px"></div>
   </div>

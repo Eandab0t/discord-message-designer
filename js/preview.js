@@ -1,5 +1,18 @@
 "use strict";
 /* ================= preview ================= */
+
+function formatMentions(text){
+  if (!text) return "";
+  let h = esc(text);
+  /* channel mentions: <#123> */
+  h = h.replace(/&lt;#(\d+)&gt;/g, '<span class="mention">#$1</span>');
+  /* role mentions: <@&123> */
+  h = h.replace(/&lt;@&amp;(\d+)&gt;/g, '<span class="role-mention">@&amp;$1</span>');
+  /* user mentions: <@123> or <@!123> */
+  h = h.replace(/&lt;@!?(\d+)&gt;/g, '<span class="mention">@$1</span>');
+  return h;
+}
+
 function renderPreview(){
   const p = $("preview");
   if (!p) return;
@@ -13,7 +26,7 @@ function renderPreview(){
         <span class="dm-username">You</span><span class="dm-bot">BOT</span>
         <span class="dm-time">Today at ${new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</span>
       </div>
-      ${state.content ? `<div class="dm-content">${esc(state.content)}</div>` : ""}
+      ${state.content ? `<div class="dm-content">${formatMentions(state.content)}</div>` : ""}
       <div data-embeds></div>
       <div data-comps></div>
     </div>`;

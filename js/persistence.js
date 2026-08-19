@@ -10,6 +10,7 @@ try {
       state.content = d.content||"";
       state.embeds = d.embeds;
       state.components = d.components||[];
+      if (d.settings) Object.assign(state.settings, d.settings);
     }
   }
 } catch(e){}
@@ -17,6 +18,11 @@ try {
 function saveDraft(){
   try {
     localStorage.setItem("wh_url", $("webhook").value);
-    localStorage.setItem("embed_builder_draft", JSON.stringify({ content:state.content, embeds:state.embeds, components:state.components }));
+    localStorage.setItem("embed_builder_draft", JSON.stringify({
+      content: state.content,
+      embeds: state.embeds,
+      components: state.components,
+      settings: state.settings
+    }));
   } catch(e){}
 }

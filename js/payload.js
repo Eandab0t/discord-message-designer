@@ -23,7 +23,19 @@ function buildPayload(){
     .map(node => serializeComp(node))
     .filter(Boolean);
 
-  return { content: state.content || null, embeds, components: components.length ? components : null };
+  const payload = { content: state.content || null, embeds, components: components.length ? components : null };
+
+  /* include settings metadata when present */
+  if (state.settings.channelId) payload.channel_id = state.settings.channelId;
+  if (state.settings.authorId) payload.author_id = state.settings.authorId;
+  if (state.settings.accentColor && state.settings.accentColor !== "#5865f2") {
+    payload.accent_color = hexToInt(state.settings.accentColor);
+  }
+  if (components.length && state.settings.flags) {
+    payload.flags = parseInt(state.settings.flags, 10) || 32768;
+  }
+
+  return payload;
 }
 
 function renderJson(){
