@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Discord Message Designer</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="simple mode-embed">
+
+<div class="topbar">
+  <div class="brand">
+    <span class="logo">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </span>
+    Discord Designer
+  </div>
+  <div class="spacer"></div>
+  <button id="btnUndo" class="btn ghost" title="Undo (Ctrl+Z)">
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.69 3L3 13"/></svg>
+  </button>
+  <button id="btnRedo" class="btn ghost" title="Redo (Ctrl+Y)">
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016.69 3L21 13"/></svg>
+  </button>
+  <button id="btnReset" class="btn danger" title="New message">
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9"/><polyline points="3 3 3 9 9 9"/></svg>
+    <span>New</span>
+  </button>
+  <button id="btnAdvanced" class="btn ghost" title="Toggle Simple/Advanced mode">Simple</button>
+  <button id="btnCmdPalette" class="btn ghost" title="Command palette (Ctrl+K)">
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </button>
+  <div class="webhook-row adv">
+    <input id="webhook" type="text" placeholder="Discord webhook URL (https://discord.com/api/webhooks/...)" spellcheck="false" />
+    <button id="btnSend" class="btn success">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Send
+    </button>
+    <button id="btnExport" class="btn">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <button id="btnImport" class="btn">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Import
+    </button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="left" id="paneLeft">
+    <div id="status" class="status"></div>
+
+    <div class="card">
+      <div class="head"><span class="t">Message Content</span><span class="cnt" id="msgTotal">0/6000</span></div>
+      <div class="cnt-wrap">
+        <textarea id="msgContent" data-limit="2000" placeholder="Write your message here... (supports markdown, @mentions)"></textarea>
+        <span data-cnt></span>
+      </div>
+    </div>
+
+    <div class="mode-tabs" id="modeTabs">
+      <button class="modebtn active" data-mode="embed">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        Embeds
+      </button>
+      <button class="modebtn" data-mode="components">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Components
+      </button>
+    </div>
+
+    <!-- ===== EMBED MODE ===== -->
+    <div id="embedPane">
+      <div class="qa-bar">
+        <span class="qa-title">Quick add</span>
+        <button class="qa" data-qa="author">Author</button>
+        <button class="qa" data-qa="title">Title</button>
+        <button class="qa" data-qa="description">Description</button>
+        <button class="qa" data-qa="field">+ Field</button>
+        <button class="qa" data-qa="image">Image</button>
+        <button class="qa" data-qa="thumbnail">Thumbnail</button>
+        <button class="qa" data-qa="footer">Footer</button>
+        <button class="qa" data-qa="timestamp">Timestamp</button>
+        <button class="qa" data-qa="color">Color</button>
+      </div>
+      <div class="section-title">Embeds <span class="spacer" style="flex:1"></span><button id="btnAddEmbed" class="btn sm primary">+ Add Embed</button></div>
+      <div id="embedList"></div>
+    </div>
+
+    <!-- ===== COMPONENTS MODE ===== -->
+    <div id="compPane">
+      <div class="palette">
+        <div class="palette-group">
+          <div class="palette-group-title">Content</div>
+          <div class="palette-items">
+            <button class="palette-btn" data-palette="markdown"><span class="palette-icon">T</span><span class="palette-label">Text</span></button>
+            <button class="palette-btn" data-palette="accessory-image"><span class="palette-icon">&#x25EB;</span><span class="palette-label">Thumbnail</span></button>
+            <button class="palette-btn" data-palette="file"><span class="palette-icon">&#x1F4C4;</span><span class="palette-label">File</span></button>
+            <button class="palette-btn" data-palette="media-gallery"><span class="palette-icon">&#x25A6;</span><span class="palette-label">Gallery</span></button>
+          </div>
+        </div>
+        <div class="palette-group">
+          <div class="palette-group-title">Layout</div>
+          <div class="palette-items">
+            <button class="palette-btn primary" data-palette="container"><span class="palette-icon">&#x25A2;</span><span class="palette-label">Container</span></button>
+            <button class="palette-btn" data-palette="section"><span class="palette-icon">&#x25A3;</span><span class="palette-label">Section</span></button>
+            <button class="palette-btn" data-palette="separator"><span class="palette-icon">&#x2014;</span><span class="palette-label">Separator</span></button>
+            <button class="palette-btn" data-palette="action-row"><span class="palette-icon">&#x2261;</span><span class="palette-label">Action Row</span></button>
+          </div>
+        </div>
+        <div class="palette-group">
+          <div class="palette-group-title">Interactive</div>
+          <div class="palette-items">
+            <button class="palette-btn" data-palette="button"><span class="palette-icon">&#x25FB;</span><span class="palette-label">Button</span></button>
+            <button class="palette-btn" data-palette="select"><span class="palette-icon">&#x25BE;</span><span class="palette-label">Select</span></button>
+            <button class="palette-btn" data-palette="select-user"><span class="palette-icon">&#x25BE;</span><span class="palette-label">User</span></button>
+            <button class="palette-btn" data-palette="select-role"><span class="palette-icon">&#x25BE;</span><span class="palette-label">Role</span></button>
+            <button class="palette-btn" data-palette="select-mentionable"><span class="palette-icon">&#x25BE;</span><span class="palette-label">Mention</span></button>
+            <button class="palette-btn" data-palette="select-channel"><span class="palette-icon">&#x25BE;</span><span class="palette-label">Channel</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Canvas <span class="spacer" style="flex:1"></span><button id="btnClearComps" class="btn sm danger">Clear All</button></div>
+      <div id="compList" class="canvas"></div>
+
+      <div id="inspector" class="inspector hidden">
+        <div class="inspector-head">
+          <span class="t" id="inspTitle">Component</span>
+          <span class="hint" id="inspTag" style="text-transform:none;font-weight:400"></span>
+          <span class="spacer" style="flex:1"></span>
+          <button id="btnInspClose" class="btn sm ghost" title="Close inspector">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div id="inspBody"></div>
+        <details id="inspAdv" class="adv hidden">
+          <summary>Advanced</summary>
+          <div id="inspAdvBody"></div>
+        </details>
+      </div>
+    </div>
+
+    <div class="section-title">Layers <span class="hint" style="text-transform:none;font-weight:400">click to select</span></div>
+    <div id="layerTree" class="layers"></div>
+
+    <div class="section-title">Validation <span class="spacer" style="flex:1"></span><button id="btnAutoFix" class="btn sm" title="Remove empty embeds/components">Auto-fix</button></div>
+    <div id="validationPanel" class="validation"></div>
+
+    <div style="height:20px"></div>
+  </div>
+
+  <div class="gutter-v" id="gutterV" title="Drag to resize"></div>
+
+  <div class="right" id="paneRight">
+    <div class="tabbtns">
+      <button class="tabbtn active" data-tab="preview">Preview</button>
+      <button class="tabbtn adv" data-tab="split">Split</button>
+      <button class="tabbtn adv" data-tab="json">JSON</button>
+    </div>
+    <div id="tab-preview" class="tabpane active">
+      <div class="discord-chat">
+        <div class="dc-channel"><span class="hash">#</span><strong>preview</strong></div>
+        <div class="dc-body" id="dcBody">
+          <div id="preview"></div>
+        </div>
+      </div>
+      <div class="gutter-h" id="gutterH" title="Drag to resize preview height"></div>
+    </div>
+    <div id="tab-split" class="tabpane">
+      <div class="split-grid">
+        <div class="discord-chat">
+          <div class="dc-channel"><span class="hash">#</span><strong>preview</strong></div>
+          <div class="dc-body">
+            <div id="splitPreview"></div>
+          </div>
+        </div>
+        <div>
+          <div class="hint" style="margin-bottom:6px;">Live Discord payload.</div>
+          <textarea id="splitJson" class="jsonbox" spellcheck="false" readonly></textarea>
+        </div>
+      </div>
+    </div>
+    <div id="tab-json" class="tabpane">
+      <div class="hint" style="margin-bottom:6px;">Discord webhook payload (embeds + components). Uploads become <code>attachment://</code> refs.</div>
+      <textarea id="jsonBox" class="jsonbox" spellcheck="false"></textarea>
+      <div style="margin-top:8px;display:flex;gap:8px;">
+        <button id="btnCopy" class="btn sm">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy JSON
+        </button>
+        <button id="btnApply" class="btn sm primary">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Apply JSON
+        </button>
+      </div>
+    </div>
+
+    <!-- status bar -->
+    <div id="statusBar" class="status-bar"></div>
+  </div>
+</div>
+
+<!-- command palette overlay -->
+<div id="cmdOverlay" class="cmd-overlay hidden">
+  <div class="cmd-dialog">
+    <input class="cmd-input" type="text" placeholder="Search commands..." spellcheck="false" />
+    <div id="cmdList" class="cmd-list"></div>
+  </div>
+</div>
+
+<button id="btnToggleSidebar" class="sidebar-toggle" title="Toggle sidebar">
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
+
+<script src="js/state.js"></script>
+<script src="js/limits.js"></script>
+<script src="js/registry.js"></script>
+<script src="js/persistence.js"></script>
+<script src="js/embeds.js"></script>
+<script src="js/components.js"></script>
+<script src="js/preview.js"></script>
+<script src="js/payload.js"></script>
+<script src="js/send.js"></script>
+<script src="js/io.js"></script>
+<script src="js/selection.js"></script>
+<script src="js/history.js"></script>
+<script src="js/layers.js"></script>
+<script src="js/validation.js"></script>
+<script src="js/cmdpalette.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
