@@ -8,6 +8,8 @@ async function sendWebhook(){
   const hasComps = payload.components && payload.components.length;
   if (!payload.content && !hasEmbeds && !hasComps) { showStatus("err", "Nothing to send — add content, an embed, or a component."); return; }
 
+  $("btnSend").classList.add("loading");
+  $("btnSend").disabled = true;
   showStatus("", "Sending...", true);
   try {
     let res;
@@ -23,12 +25,18 @@ async function sendWebhook(){
       let detail = "";
       try { const j = await res.json(); detail = j.message || JSON.stringify(j); } catch(_){ try { detail = await res.text(); } catch(_){} }
       showStatus("err", "Discord error " + res.status + ": " + detail);
+      showToast("Send failed: " + res.status, "err");
       return;
     }
     showStatus("ok", "Message sent to Discord.");
+    showToast("Message sent!", "ok");
     saveDraft();
   } catch(e){
     showStatus("err", "Failed to send: " + e.message);
+    showToast("Send failed", "err");
+  } finally {
+    $("btnSend").classList.remove("loading");
+    $("btnSend").disabled = false;
   }
 }
 

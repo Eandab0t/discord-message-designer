@@ -5,6 +5,8 @@ function switchTab(name){
   document.querySelectorAll(".tabpane").forEach(p => p.classList.toggle("active", p.id === "tab-" + name));
   if (name === "json" || name === "split") renderJson();
   if (name === "split") renderPreview();
+  /* auto-switch to properties when selecting a component */
+  if (name === "properties") renderInspector();
 }
 document.querySelectorAll(".tabbtn").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
 
@@ -26,7 +28,19 @@ $("btnClearComps").onclick = () => { if(!confirm("Remove all components?")) retu
 $("btnSend").onclick = sendWebhook;
 $("btnExport").onclick = exportJson;
 $("btnImport").onclick = importJson;
-$("btnCopy").onclick = () => { renderJson(); navigator.clipboard.writeText($("jsonBox").value).then(()=>showStatus("ok","JSON copied.")).catch(()=>showStatus("err","Copy blocked by browser.")); };
+$("btnCopy").onclick = () => {
+  renderJson();
+  const text = $("jsonBox").value;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("JSON copied to clipboard", "ok");
+    showStatus("ok", "JSON copied.");
+  }).catch(() => {
+    /* fallback: select text */
+    $("jsonBox").select();
+    document.execCommand("copy");
+    showToast("JSON copied to clipboard", "ok");
+  });
+};
 $("btnReset").onclick = () => {
   if (!confirm("Clear all embeds, components and content?")) return;
   beforeEdit();
@@ -79,6 +93,7 @@ document.addEventListener("keydown", (e) => {
     renderComponents();
     applySelection();
     renderInspector();
+    switchTab("preview");
   }
 });
 

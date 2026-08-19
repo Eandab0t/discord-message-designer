@@ -8,6 +8,8 @@ function selectTarget(t){
   scrollToSelected();
   renderLayers();
   renderInspector();
+  /* auto-switch to Properties tab when a component is selected */
+  if (t && t.kind === "comp") switchTab("properties");
 }
 function applySelection(){
   document.querySelectorAll(".embed-item.selected, .canvas-node.selected, .layer-item.selected").forEach(el => el.classList.remove("selected"));

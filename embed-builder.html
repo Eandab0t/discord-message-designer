@@ -4,46 +4,26 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Discord Message Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="simple mode-embed">
 
 <div class="topbar">
-  <div class="brand">
-    <span class="logo">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-    </span>
-    Discord Designer
-  </div>
+  <div class="brand"><span class="logo">&#x25C8;</span> Discord Designer</div>
   <div class="spacer"></div>
-  <button id="btnUndo" class="btn ghost" title="Undo (Ctrl+Z)">
-    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.69 3L3 13"/></svg>
-  </button>
-  <button id="btnRedo" class="btn ghost" title="Redo (Ctrl+Y)">
-    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016.69 3L21 13"/></svg>
-  </button>
-  <button id="btnReset" class="btn danger" title="New message">
-    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9"/><polyline points="3 3 3 9 9 9"/></svg>
-    <span>New</span>
-  </button>
+  <button id="btnUndo" class="btn ghost" title="Undo (Ctrl+Z)">&#x21B6;</button>
+  <button id="btnRedo" class="btn ghost" title="Redo (Ctrl+Y)">&#x21B7;</button>
+  <button id="btnReset" class="btn danger">New Message</button>
   <button id="btnAdvanced" class="btn ghost" title="Toggle Simple/Advanced mode">Simple</button>
-  <button id="btnCmdPalette" class="btn ghost" title="Command palette (Ctrl+K)">
-    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-  </button>
+  <button id="btnCmdPalette" class="btn ghost" title="Command palette (Ctrl+K)">&#x2318;K</button>
   <div class="webhook-row adv">
     <input id="webhook" type="text" placeholder="Discord webhook URL (https://discord.com/api/webhooks/...)" spellcheck="false" />
-    <button id="btnSend" class="btn success">
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      Send
-    </button>
-    <button id="btnExport" class="btn">
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Export
-    </button>
-    <button id="btnImport" class="btn">
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Import
-    </button>
+    <button id="btnSend" class="btn success">Send</button>
+    <button id="btnExport" class="btn">Export</button>
+    <button id="btnImport" class="btn">Import</button>
   </div>
 </div>
 
@@ -60,14 +40,8 @@
     </div>
 
     <div class="mode-tabs" id="modeTabs">
-      <button class="modebtn active" data-mode="embed">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-        Embeds
-      </button>
-      <button class="modebtn" data-mode="components">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Components
-      </button>
+      <button class="modebtn active" data-mode="embed">&#x25A2; Embeds</button>
+      <button class="modebtn" data-mode="components">&#x25A3; Components</button>
     </div>
 
     <!-- ===== EMBED MODE ===== -->
@@ -130,9 +104,7 @@
           <span class="t" id="inspTitle">Component</span>
           <span class="hint" id="inspTag" style="text-transform:none;font-weight:400"></span>
           <span class="spacer" style="flex:1"></span>
-          <button id="btnInspClose" class="btn sm ghost" title="Close inspector">
-            <svg width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+          <button id="btnInspClose" class="btn sm ghost" title="Close inspector">&#x2715;</button>
         </div>
         <div id="inspBody"></div>
         <details id="inspAdv" class="adv hidden">
@@ -156,6 +128,7 @@
   <div class="right" id="paneRight">
     <div class="tabbtns">
       <button class="tabbtn active" data-tab="preview">Preview</button>
+      <button class="tabbtn" data-tab="properties">Properties</button>
       <button class="tabbtn adv" data-tab="split">Split</button>
       <button class="tabbtn adv" data-tab="json">JSON</button>
     </div>
@@ -168,6 +141,13 @@
       </div>
       <div class="gutter-h" id="gutterH" title="Drag to resize preview height"></div>
     </div>
+    <div id="tab-properties" class="tabpane">
+      <div id="rightInspector">
+        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">
+          Select a component on the canvas or in the layers tree to edit its properties.
+        </div>
+      </div>
+    </div>
     <div id="tab-split" class="tabpane">
       <div class="split-grid">
         <div class="discord-chat">
@@ -177,23 +157,21 @@
           </div>
         </div>
         <div>
-          <div class="hint" style="margin-bottom:6px;">Live Discord payload.</div>
+          <div class="hint" style="margin-bottom:8px;">Live Discord payload.</div>
           <textarea id="splitJson" class="jsonbox" spellcheck="false" readonly></textarea>
         </div>
       </div>
     </div>
     <div id="tab-json" class="tabpane">
-      <div class="hint" style="margin-bottom:6px;">Discord webhook payload (embeds + components). Uploads become <code>attachment://</code> refs.</div>
+      <div class="hint" style="margin-bottom:8px;">Discord webhook payload (embeds + components). Uploads become <code>attachment://</code> refs.</div>
       <textarea id="jsonBox" class="jsonbox" spellcheck="false"></textarea>
-      <div style="margin-top:8px;display:flex;gap:8px;">
-        <button id="btnCopy" class="btn sm">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          Copy JSON
-        </button>
-        <button id="btnApply" class="btn sm primary">
-          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Apply JSON
-        </button>
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button id="btnCopy" class="btn sm">Copy JSON</button>
+        <button id="btnApply" class="btn sm primary">Apply JSON</button>
+      </div>
+      <div class="import-area" id="importArea" style="margin-top:12px">
+        <input type="file" id="importFile" accept=".json" style="display:none" />
+        <div>&#x1F4C1; Drop a .json file here or <strong>click to browse</strong></div>
       </div>
     </div>
 
@@ -210,9 +188,10 @@
   </div>
 </div>
 
-<button id="btnToggleSidebar" class="sidebar-toggle" title="Toggle sidebar">
-  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-</button>
+<!-- toast -->
+<div id="toast" class="toast"></div>
+
+<button id="btnToggleSidebar" class="sidebar-toggle" title="Toggle sidebar">&#x276E; &#x276F;</button>
 
 <script src="js/state.js"></script>
 <script src="js/limits.js"></script>

@@ -1,5 +1,8 @@
 "use strict";
 /* ================= layers tree ================= */
+let dragLayerId = null;
+let dragLayerOverId = null;
+
 function layerEmbedLabel(em){
   const t = em.title || em.description || em.authorName || em.footerText || (em.fields.some(f=>f.name||f.value) ? "fields" : "");
   return "Embed" + (t ? " \u2014 " + String(t).slice(0, 40) : "");
@@ -48,7 +51,45 @@ function renderLayerNode(tree, node, depth){
     `<span class="ch">${def ? def.icon : "?"}</span> <span>${esc(label + content)}</span>` +
     `<span class="spacer2"></span><span class="eye" title="Show/Hide">${node.hidden?"&#x25CC;":"&#x25CF;"}</span>`,
     node.hidden ? "layer-row-hidden" : "");
+  d.draggable = true;
+  d.dataset.dragNid = node.id;
   if (selected && selected.kind === "comp" && selected.id === node.id) d.classList.add("selected");
+  if (dragLayerOverId === node.id) d.classList.add("drag-over");
+
+  /* drag handlers */
+  d.ondragstart = (e) => {
+    dragLayerId = node.id;
+    e.dataTransfer.effectAllowed = "move";
+    d.classList.add("dragging");
+    setTimeout(() => renderLayers(), 0);
+  };
+  d.ondragend = () => {
+    dragLayerId = null;
+    dragLayerOverId = null;
+    renderLayers();
+  };
+  d.ondragover = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    dragLayerOverId = node.id;
+  };
+  d.ondrop = (e) => {
+    e.preventDefault();
+    if (!dragLayerId || dragLayerId === node.id) return;
+    beforeEdit("layermove");
+    const src = findNode(dragLayerId);
+    if (!src) return;
+    const srcInfo = findNodeParent(dragLayerId);
+    if (!srcInfo) return;
+    srcInfo.arr.splice(srcInfo.idx, 1);
+    const tgtInfo = findNodeParent(node.id);
+    if (!tgtInfo) { state.components.push(src); }
+    else { tgtInfo.arr.splice(tgtInfo.idx, 0, src); }
+    dragLayerId = null;
+    dragLayerOverId = null;
+    renderAll();
+  };
+
   d.onclick = (e) => {
     if (e.target.classList.contains("eye")) { node.hidden = !node.hidden; renderAll(); return; }
     selectTarget({ kind:"comp", id: node.id });

@@ -9,8 +9,8 @@ function renderComponents(){
       <div class="canvas-empty-icon">\u25A2</div>
       <div>No components yet.</div>
       <div class="hint">Add a Container or Action Row from the palette above.</div>
-      <button class="btn sm primary" data-empty-add="container" style="margin-top:10px">+ Container</button>
-      <button class="btn sm" data-empty-add="action-row" style="margin-top:6px">+ Action Row</button>
+      <button class="btn sm primary" data-empty-add="container" style="margin-top:12px">+ Container</button>
+      <button class="btn sm" data-empty-add="action-row" style="margin-top:8px">+ Action Row</button>
     </div>`;
     list.querySelectorAll("[data-empty-add]").forEach(btn => {
       btn.onclick = () => {
@@ -67,8 +67,8 @@ function showInlinePopover(anchorBtn, afterId){
   /* position near the anchor */
   const r = anchorBtn.getBoundingClientRect();
   pop.style.position = "fixed";
-  pop.style.left = Math.min(r.left, window.innerWidth - 220) + "px";
-  pop.style.top = (r.bottom + 4) + "px";
+  pop.style.left = Math.min(r.left, window.innerWidth - 240) + "px";
+  pop.style.top = (r.bottom + 6) + "px";
   pop.style.zIndex = 9999;
 
   pop.querySelectorAll("[data-addtype]").forEach(btn => {
@@ -78,7 +78,6 @@ function showInlinePopover(anchorBtn, afterId){
       const def = COMPONENT_TYPES[btn.dataset.addtype];
       if (!def) return;
       const node = def.create();
-      /* if afterId is null, insert at beginning; otherwise after the node */
       if (!afterId) {
         state.components.unshift(node);
       } else {
@@ -92,7 +91,6 @@ function showInlinePopover(anchorBtn, afterId){
     };
   });
 
-  /* close on outside click */
   setTimeout(() => {
     document.addEventListener("click", closeInlinePopover, { once: true });
   }, 10);
@@ -217,40 +215,64 @@ function assignNewIds(node){
   if (node.accessory) node.accessory.id = uid();
 }
 
-/* ================= contextual inspector ================= */
+/* ================= contextual inspector (renders into right panel) ================= */
 function renderInspector(){
-  const insp = $("inspector");
-  if (!insp) return;
+  const container = $("rightInspector");
+  if (!container) return;
   if (!selected || selected.kind !== "comp" || !selected.id){
-    insp.classList.add("hidden");
-    const body = $("inspBody");
-    if (body) body.innerHTML = `<div class="hint" style="padding:16px;text-align:center">Select a component on the canvas or in the tree to edit its properties.</div>`;
-    $("inspAdv").classList.add("hidden");
+    container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">
+      Select a component on the canvas or in the layers tree to edit its properties.
+    </div>`;
+    /* also hide old inspector if present */
+    const oldInsp = $("inspector");
+    if (oldInsp) oldInsp.classList.add("hidden");
+    const adv = $("inspAdv");
+    if (adv) adv.classList.add("hidden");
     return;
   }
   const node = findNode(selected.id);
-  if (!node){ insp.classList.add("hidden"); return; }
+  if (!node){ container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Component not found.</div>`; return; }
   const def = COMPONENT_TYPES[node.type];
-  if (!def){ insp.classList.add("hidden"); return; }
+  if (!def){ container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Unknown type.</div>`; return; }
 
-  $("inspTitle").textContent = def.label;
-  $("inspTag").textContent = "type " + ({button:2,select:3,"select-user":5,"select-role":6,"select-mentionable":7,"select-channel":8,section:9,markdown:10,"accessory-image":11,"media-gallery":12,file:13,separator:14,container:17,"action-row":1}[node.type] || "?");
+  const typeNum = ({button:2,select:3,"select-user":5,"select-role":6,"select-mentionable":7,"select-channel":8,section:9,markdown:10,"accessory-image":11,"media-gallery":12,file:13,separator:14,container:17,"action-row":1}[node.type] || "?");
 
-  const body = $("inspBody");
-  body.innerHTML = "";
-  const advBody = $("inspAdvBody");
-  advBody.innerHTML = "";
+  let html = `
+    <div class="inspector">
+      <div class="inspector-head">
+        <span class="t">${def.label}</span>
+        <span class="hint" style="text-transform:none;font-weight:400">type ${typeNum}</span>
+        <span class="spacer" style="flex:1"></span>
+        <button id="btnInspClose" class="btn sm ghost" title="Close inspector">&#x2715;</button>
+      </div>
+      <div id="inspBody">${def.editor(node)}</div>
+      <details id="inspAdv" class="adv hidden">
+        <summary>Advanced</summary>
+        <div id="inspAdvBody"></div>
+      </details>
+    </div>`;
 
-  const editorDiv = document.createElement("div");
-  editorDiv.innerHTML = def.editor(node);
-  body.appendChild(editorDiv);
+  container.innerHTML = html;
 
-  wireInspectorFields(editorDiv, node);
+  const body = container.querySelector("#inspBody");
+  wireInspectorFields(body, node);
 
-  editorDiv.querySelectorAll(".adv").forEach(el => advBody.appendChild(el));
-  $("inspAdv").classList.toggle("hidden", advBody.childElementCount === 0);
+  /* move .adv elements to advanced section */
+  const advBody = container.querySelector("#inspAdvBody");
+  const advDetails = container.querySelector("#inspAdv");
+  if (advBody && advDetails) {
+    body.querySelectorAll(".adv").forEach(el => advBody.appendChild(el));
+    advDetails.classList.toggle("hidden", advBody.childElementCount === 0);
+  }
 
-  insp.classList.remove("hidden");
+  container.querySelector("#btnInspClose").onclick = () => {
+    selected = null;
+    renderComponents();
+    applySelection();
+    renderInspector();
+    switchTab("preview");
+  };
+
   updateCounters();
   renderValidation();
 }
@@ -390,5 +412,3 @@ function wireInspectorFields(root, node){
     };
   }
 }
-
-$("btnInspClose").onclick = () => { selected = null; renderComponents(); applySelection(); renderInspector(); };
