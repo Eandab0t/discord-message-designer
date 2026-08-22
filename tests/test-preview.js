@@ -26,7 +26,7 @@ const test = `
   assert(document.querySelector(".dm-username").textContent === "You", "username");
   assert(document.querySelector(".dm-bot").textContent === "BOT", "bot badge");
   assert(document.querySelector(".dm-time").textContent.indexOf("Today") === 0, "timestamp");
-  assert(document.querySelector(".dm-content").textContent === "Hello **world**", "content");
+  assert(document.querySelector(".dm-content").textContent === "Hello world", "content rendered with markdown");
 
   /* embed preview */
   var e = document.querySelector(".embed");

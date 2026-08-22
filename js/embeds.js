@@ -17,15 +17,6 @@ function renderEmbeds(){
         <button class="btn sm danger" data-act="del">Delete</button>
       </div>
       <div class="body">
-        <label>Author</label>
-        <div class="cnt-wrap">
-          <input type="text" data-f="authorName" data-limit="${LIMITS.authorName}" value="${escAttr(em.authorName)}" placeholder="Author name" />
-          <span data-cnt></span>
-        </div>
-        <div class="row2" style="margin-top:6px">
-          <input type="text" data-f="authorUrl" value="${escAttr(em.authorUrl)}" placeholder="Author URL" />
-          <input type="text" data-f="authorIcon" value="${escAttr(em.authorIcon)}" placeholder="Author icon URL" />
-        </div>
         <label>Title</label>
         <div class="cnt-wrap">
           <input type="text" data-f="title" data-limit="${LIMITS.embedTitle}" value="${escAttr(em.title)}" placeholder="Embed title" />
@@ -42,33 +33,29 @@ function renderEmbeds(){
           <input type="color" data-f="color" value="${escAttr(em.color)}" />
           <input type="text" data-f="colorText" value="${escAttr(em.color)}" placeholder="#5865f2" />
         </div>
+        <div class="col-section" data-collapse="author-${i}">
+          <div class="col-header" data-collapse-btn="author-${i}">
+            <span>Author</span>
+            <span class="col-arrow">\u25BE</span>
+          </div>
+          <div class="col-body"></div>
+        </div>
         <label>Fields</label>
         <div data-fields></div>
         <button class="btn sm" data-act="addfield">+ Add Field</button>
-        <label>Thumbnail</label>
-        <div class="img-upload">
-          <img class="thumb" src="${escAttr(thumbSrc(em))}" />
-          <div style="flex:1">
-            <input type="text" data-f="thumb" value="${escAttr(thumbUrlText(em))}" placeholder="Thumbnail URL" />
-            <input type="file" data-file="thumb" accept="image/*" style="margin-top:4px;font-size:12px" />
+        <div class="col-section" data-collapse="images-${i}">
+          <div class="col-header" data-collapse-btn="images-${i}">
+            <span>Thumbnail &amp; Image</span>
+            <span class="col-arrow">\u25BE</span>
           </div>
+          <div class="col-body"></div>
         </div>
-        <label>Image</label>
-        <div class="img-upload">
-          <img class="thumb" src="${escAttr(imageSrc(em))}" />
-          <div style="flex:1">
-            <input type="text" data-f="image" value="${escAttr(imageUrlText(em))}" placeholder="Image URL" />
-            <input type="file" data-file="image" accept="image/*" style="margin-top:4px;font-size:12px" />
+        <div class="col-section" data-collapse="footer-${i}">
+          <div class="col-header" data-collapse-btn="footer-${i}">
+            <span>Footer &amp; Timestamp</span>
+            <span class="col-arrow">\u25BE</span>
           </div>
-        </div>
-        <label>Footer</label>
-        <div class="cnt-wrap">
-          <input type="text" data-f="footerText" data-limit="${LIMITS.footerText}" value="${escAttr(em.footerText)}" placeholder="Footer text" />
-          <span data-cnt></span>
-        </div>
-        <input type="text" data-f="footerIcon" value="${escAttr(em.footerIcon)}" placeholder="Footer icon URL" style="margin-top:6px" />
-        <div class="inline-check" style="margin-top:8px;justify-content:flex-start">
-          <input type="checkbox" data-f="timestamp" ${em.timestamp?"checked":""} /> Show timestamp
+          <div class="col-body"></div>
         </div>
       </div>`;
     list.appendChild(div);
@@ -104,6 +91,65 @@ function renderEmbeds(){
   div.querySelectorAll("input[data-fv]").forEach(inp => inp.oninput = (e) => { beforeEdit("fv"+e.target.dataset.fv); em.fields[+e.target.dataset.fv].value = e.target.value; renderPreview(); renderJson(); renderValidation(); commitHistory("fv"+e.target.dataset.fv); });
   div.querySelectorAll("input[data-fil]").forEach(inp => inp.onchange = (e) => { beforeEdit("fil"+e.target.dataset.fil); em.fields[+e.target.dataset.fil].inline = e.target.checked; renderPreview(); renderJson(); renderValidation(); commitHistory("fil"+e.target.dataset.fil); });
 
+    div.querySelector('[data-act="addfield"]').onclick = () => { beforeEdit(); em.fields.push({name:"",value:"",inline:false}); renderAll(); };
+    div.querySelector('[data-act="del"]').onclick = () => { beforeEdit(); state.embeds.splice(i,1); cleanupFiles(i); selected=null; renderAll(); };
+    div.querySelector('[data-act="dup"]').onclick = () => {
+      beforeEdit();
+      const copy = JSON.parse(JSON.stringify(em)); copy.id = "e" + (embedSeq++);
+      state.embeds.splice(i+1, 0, copy);
+      renderAll();
+    };
+
+    /* populate collapsible sections */
+    const authorCol = div.querySelector(`[data-collapse="author-${i}"] .col-body`);
+    if (authorCol) authorCol.innerHTML = `
+      <div class="cnt-wrap">
+        <input type="text" data-f="authorName" data-limit="${LIMITS.authorName}" value="${escAttr(em.authorName)}" placeholder="Author name" />
+        <span data-cnt></span>
+      </div>
+      <div class="row2" style="margin-top:6px">
+        <input type="text" data-f="authorUrl" value="${escAttr(em.authorUrl)}" placeholder="Author URL" />
+        <input type="text" data-f="authorIcon" value="${escAttr(em.authorIcon)}" placeholder="Author icon URL" />
+      </div>`;
+    const imagesCol = div.querySelector(`[data-collapse="images-${i}"] .col-body`);
+    if (imagesCol) imagesCol.innerHTML = `
+      <label>Thumbnail</label>
+      <div class="img-upload">
+        <img class="thumb" src="${escAttr(thumbSrc(em))}" />
+        <div style="flex:1">
+          <input type="text" data-f="thumb" value="${escAttr(thumbUrlText(em))}" placeholder="Thumbnail URL" />
+          <input type="file" data-file="thumb" accept="image/*" style="margin-top:4px;font-size:12px" />
+        </div>
+      </div>
+      <label>Image</label>
+      <div class="img-upload">
+        <img class="thumb" src="${escAttr(imageSrc(em))}" />
+        <div style="flex:1">
+          <input type="text" data-f="image" value="${escAttr(imageUrlText(em))}" placeholder="Image URL" />
+          <input type="file" data-file="image" accept="image/*" style="margin-top:4px;font-size:12px" />
+        </div>
+      </div>`;
+    const footerCol = div.querySelector(`[data-collapse="footer-${i}"] .col-body`);
+    if (footerCol) footerCol.innerHTML = `
+      <label>Footer</label>
+      <div class="cnt-wrap">
+        <input type="text" data-f="footerText" data-limit="${LIMITS.footerText}" value="${escAttr(em.footerText)}" placeholder="Footer text" />
+        <span data-cnt></span>
+      </div>
+      <input type="text" data-f="footerIcon" value="${escAttr(em.footerIcon)}" placeholder="Footer icon URL" style="margin-top:6px" />
+      <div class="inline-check" style="margin-top:8px;justify-content:flex-start">
+        <input type="checkbox" data-f="timestamp" ${em.timestamp?"checked":""} /> Show timestamp
+      </div>`;
+
+    /* collapse toggles */
+    div.querySelectorAll("[data-collapse-btn]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const section = btn.closest(".col-section");
+        if (section) section.classList.toggle("collapsed");
+      });
+    });
+
+    /* data-f bindings (must be AFTER collapsible section population) */
     div.querySelectorAll("[data-f]").forEach(inp => {
       inp.oninput = () => {
         beforeEdit("em"+i+"-"+inp.dataset.f);
@@ -131,15 +177,6 @@ function renderEmbeds(){
         saveDraft();
       };
     });
-
-    div.querySelector('[data-act="addfield"]').onclick = () => { beforeEdit(); em.fields.push({name:"",value:"",inline:false}); renderAll(); };
-    div.querySelector('[data-act="del"]').onclick = () => { beforeEdit(); state.embeds.splice(i,1); cleanupFiles(i); selected=null; renderAll(); };
-    div.querySelector('[data-act="dup"]').onclick = () => {
-      beforeEdit();
-      const copy = JSON.parse(JSON.stringify(em)); copy.id = "e" + (embedSeq++);
-      state.embeds.splice(i+1, 0, copy);
-      renderAll();
-    };
     div.draggable = true;
     div.addEventListener("dragstart", (e) => { e.dataTransfer.setData("text/plain", String(i)); div.style.opacity = ".5"; });
     div.addEventListener("dragend", () => div.style.opacity = "1");

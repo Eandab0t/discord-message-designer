@@ -35,9 +35,20 @@
 
     <div class="card">
       <div class="head"><span class="t">Message Content</span><span class="cnt" id="msgTotal">0/6000</span></div>
+      <div class="fmt-toolbar" id="contentFmtToolbar"></div>
       <div class="cnt-wrap">
         <textarea id="msgContent" data-limit="2000" placeholder="Write your message here... (supports markdown, @mentions)"></textarea>
         <span data-cnt></span>
+      </div>
+      <div class="md-hints" id="mdHints">
+        <button class="md-hint" data-md="bold">**bold**</button>
+        <button class="md-hint" data-md="italic">*italic*</button>
+        <button class="md-hint" data-md="code">`code`</button>
+        <button class="md-hint" data-md="codeblock">```block```</button>
+        <button class="md-hint" data-md="spoiler">||spoiler||</button>
+        <button class="md-hint" data-md="strikethrough">~~strike~~</button>
+        <button class="md-hint" data-md="everyone">@everyone</button>
+        <button class="md-hint" data-md="here">@here</button>
       </div>
     </div>
 
@@ -214,6 +225,30 @@
   <div class="cmd-dialog">
     <input class="cmd-input" type="text" placeholder="Search commands..." spellcheck="false" />
     <div id="cmdList" class="cmd-list"></div>
+  </div>
+</div>
+
+<!-- emoji picker modal -->
+<div id="emojiModal" class="cmd-overlay hidden">
+  <div class="cmd-dialog" style="max-width:420px">
+    <input class="cmd-input" id="emojiSearch" type="text" placeholder="Search emoji..." spellcheck="false" />
+    <div id="emojiCats" class="emoji-cats"></div>
+    <div id="emojiGrid" class="emoji-grid"></div>
+  </div>
+</div>
+
+<!-- mention inserter modal -->
+<div id="mentionModal" class="cmd-overlay hidden">
+  <div class="cmd-dialog" style="max-width:380px">
+    <div class="cmd-input" style="cursor:default;font-weight:600" id="mentionModalTitle">Insert Mention</div>
+    <div style="padding:16px">
+      <label id="mentionInputLabel">ID</label>
+      <input class="cmd-input" id="mentionIdInput" type="text" placeholder="Enter ID..." spellcheck="false" style="border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:6px" />
+    </div>
+    <div style="padding:0 16px 16px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn ghost" id="cancelMentionModal">Cancel</button>
+      <button class="btn primary" id="confirmMentionModal">Insert</button>
+    </div>
   </div>
 </div>
 
